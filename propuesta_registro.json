@@ -1,0 +1,20 @@
+{
+    "BIO-9003-98-9-GFP": {
+        "id_cepa_cas": "BIO-9003-98-9-GFP",
+        "nombre_cientifico": "Aequorea victoria Fluorescent Protein Strain",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": -20.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 14.25,
+        "volumen_stock": 1000.0
+    },
+    "BIO-1100-22-4-BACS": {
+        "id_cepa_cas": "BIO-1100-22-4-BACS",
+        "nombre_cientifico": "Bacillus subtilis (Cepa Bioluminiscente Educativa)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": 4.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 8.50,
+        "volumen_stock": 2500.0
+    }
+}
