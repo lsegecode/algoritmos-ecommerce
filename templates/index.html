@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo de Cepas - BioTinker{% endblock %}
+
+{% block content %}
+<section class="catalog-section">
+    <div class="catalog-hero">
+        <h1>Catálogo de Suministros Biotecnológicos</h1>
+        <p>Modelado de datos en memoria para la gestión y simulación de inventarios científicos.</p>
+    </div>
+
+    <!-- Barra de Filtros y Búsqueda -->
+    <div class="filters-container glass">
+        <form method="GET" action="/" class="filters-form">
+            <div class="form-group search-group">
+                <label for="search-input">Buscar</label>
+                <div class="search-input-wrapper">
+                    <input type="text" id="search-input" name="q" value="{{ query }}" placeholder="Ej: GFP, Bacillus, SKU...">
+                    <button type="submit" class="search-btn">
+                        <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="category-select">Categoría</label>
+                <select id="category-select" name="categoria" onchange="this.form.submit()">
+                    <option value="Todas" {% if categoria_actual == 'Todas' %}selected{% endif %}>Todas las categorías</option>
+                    {% for cat in categorias %}
+                    <option value="{{ cat }}" {% if categoria_actual == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sort-select">Ordenar por</label>
+                <select id="sort-select" name="orden" onchange="this.form.submit()">
+                    <option value="nombre" {% if orden_actual == 'nombre' %}selected{% endif %}>Nombre Científico (A-Z)</option>
+                    <option value="precio_asc" {% if orden_actual == 'precio_asc' %}selected{% endif %}>Precio: Menor a Mayor</option>
+                    <option value="precio_desc" {% if orden_actual == 'precio_desc' %}selected{% endif %}>Precio: Mayor a Menor</option>
+                    <option value="stock_asc" {% if orden_actual == 'stock_asc' %}selected{% endif %}>Stock: Menor a Mayor</option>
+                    <option value="stock_desc" {% if orden_actual == 'stock_desc' %}selected{% endif %}>Stock: Mayor a Menor</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                {% if query or categoria_actual != 'Todas' or orden_actual != 'nombre' %}
+                <a href="/" class="btn-reset">Limpiar Filtros</a>
+                {% endif %}
+                <button type="submit" class="btn-apply">Aplicar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Grilla de Productos -->
+    <div class="products-grid">
+        {% if productos %}
+            {% for prod in productos %}
+                <div class="product-card glass {% if prod.volumen_stock <= 0 %}out-of-stock-card{% endif %}" id="card-{{ prod.id_cepa_sku }}">
+                    <div class="card-header">
+                        <span class="category-badge">{{ prod.Categoria }}</span>
+                        <span class="bioseguridad-badge level-{{ prod.nivel_bioseguridad }}">
+                            Nivel BST {{ prod.nivel_bioseguridad }}
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <h3 class="product-title">{{ prod.nombre_cientifico }}</h3>
+                        <p class="product-sku">SKU: <code>{{ prod.id_cepa_sku }}</code></p>
+                        <p class="product-desc-preview">{{ prod.Descripcion | truncate(100) }}</p>
+                        
+                        <div class="product-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Temp:</span>
+                                <span class="meta-value">{{ prod.temp_almacenamiento }} °C</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Licencia:</span>
+                                <span class="meta-value">{% if prod.requiere_licencia %}Requerida{% else %}No requerida{% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="price-box">
+                            <div class="price-row">
+                                <span class="price-label">Precio/μL:</span>
+                                <span class="price-value">${{ "%.2f" | format(prod.precio_por_microlitro) }}</span>
+                            </div>
+                            <div class="price-row wholesale">
+                                <span class="price-label">Mayorista:</span>
+                                <span class="price-value">${{ "%.2f" | format(prod.precio_mayorista) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="stock-box">
+                            <span class="stock-label">Stock:</span>
+                            <span id="stock-val-{{ prod.id_cepa_sku }}" class="stock-value {% if prod.volumen_stock < 800 %}stock-low{% endif %}">
+                                {% if prod.volumen_stock > 0 %}
+                                    {{ prod.volumen_stock | int }} μL
+                                {% else %}
+                                    Sin Stock
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="/producto/{{ prod.id_cepa_sku }}" class="btn-secondary">Detalle</a>
+                            <button 
+                                id="btn-add-{{ prod.id_cepa_sku }}"
+                                class="btn-primary" 
+                                onclick="addToCart('{{ prod.id_cepa_sku }}', {{ prod.volumen_stock }}, '{{ prod.nombre_cientifico }}', {{ prod.precio_por_microlitro }})"
+                                {% if prod.volumen_stock <= 0 %}disabled{% endif %}>
+                                {% if prod.volumen_stock <= 0 %}Sin Stock{% else %}Agregar{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results glass">
+                <p>No se encontraron productos que coincidan con los criterios de búsqueda o filtrado.</p>
+                <a href="/" class="btn-primary">Ver Catálogo Completo</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

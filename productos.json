@@ -1,0 +1,122 @@
+{
+    "BIO-9003-98-9-GFP": {
+        "id_cepa_sku": "BIO-9003-98-9-GFP",
+        "nombre_cientifico": "Aequorea victoria Fluorescent Protein Strain",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": -20.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 14.25,
+        "precio_mayorista": 11.50,
+        "volumen_stock": 1000.0,
+        "Descripcion": "Cepa modificada genéticamente que expresa la Proteína Verde Fluorescente (GFP) de Aequorea victoria. Ideal para demostraciones educativas de fluorescencia y marcado molecular.",
+        "Categoria": "Bioluminiscencia"
+    },
+    "BIO-1100-22-4-BACS": {
+        "id_cepa_sku": "BIO-1100-22-4-BACS",
+        "nombre_cientifico": "Bacillus subtilis (Cepa Bioluminiscente Educativa)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": 4.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 8.50,
+        "precio_mayorista": 6.80,
+        "volumen_stock": 2500.0,
+        "Descripcion": "Cepa educativa no patógena de Bacillus subtilis que emite luz visible en oscuridad tras la adición del sustrato de luciferina. Muy utilizada para laboratorios escolares.",
+        "Categoria": "Bioluminiscencia"
+    },
+    "BIO-2200-33-1-ECOL": {
+        "id_cepa_sku": "BIO-2200-33-1-ECOL",
+        "nombre_cientifico": "Escherichia coli DH5-alpha (Cepa de Clonación)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": -80.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 5.20,
+        "precio_mayorista": 3.90,
+        "volumen_stock": 5000.0,
+        "Descripcion": "Cepa bacteriana de competencia estándar de alta eficiencia para clonación de plásmidos y propagación de ADN recombinante. Carece de actividad de endonucleasas endógenas.",
+        "Categoria": "Ingeniería Genética"
+    },
+    "BIO-4400-55-2-SACCH": {
+        "id_cepa_sku": "BIO-4400-55-2-SACCH",
+        "nombre_cientifico": "Saccharomyces cerevisiae (Expresión de Levadura)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": 4.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 9.75,
+        "precio_mayorista": 7.50,
+        "volumen_stock": 3000.0,
+        "Descripcion": "Cepa diploide optimizada para la expresión de proteínas eucariotas recombinantes y estudios de fermentación industrial.",
+        "Categoria": "Microbiología Industrial"
+    },
+    "BIO-5500-66-3-LACT": {
+        "id_cepa_sku": "BIO-5500-66-3-LACT",
+        "nombre_cientifico": "Lactobacillus acidophilus (Probiótica)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": 4.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 6.50,
+        "precio_mayorista": 4.80,
+        "volumen_stock": 4000.0,
+        "Descripcion": "Bacteria ácido-láctica de grado industrial utilizada en investigación alimentaria para la fermentación de lácteos y estudios de microbiota intestinal.",
+        "Categoria": "Microbiología Industrial"
+    },
+    "BIO-7700-88-4-PYRO": {
+        "id_cepa_sku": "BIO-7700-88-4-PYRO",
+        "nombre_cientifico": "Pyrococcus furiosus (Arquea Hipertermófila)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": -20.0,
+        "requiere_licencia": true,
+        "precio_por_microlitro": 24.50,
+        "precio_mayorista": 19.80,
+        "volumen_stock": 800.0,
+        "Descripcion": "Arquea hipertermófila aislada de sedimentos geotermales marinos. Fuente natural de la ADN polimerasa Pfu, caracterizada por su alta fidelidad térmica.",
+        "Categoria": "Ingeniería Genética"
+    },
+    "BIO-8800-99-5-THERM": {
+        "id_cepa_sku": "BIO-8800-99-5-THERM",
+        "nombre_cientifico": "Thermus aquaticus (Fuente Taq Polimerasa)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": 4.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 18.00,
+        "precio_mayorista": 14.50,
+        "volumen_stock": 1500.0,
+        "Descripcion": "Bacteria termófila de origen hidrotermal. Fuente de la enzima Taq polimerasa, pilar fundamental de la reacción en cadena de la polimerasa (PCR).",
+        "Categoria": "Ingeniería Genética"
+    },
+    "BIO-3300-44-6-RHIZO": {
+        "id_cepa_sku": "BIO-3300-44-6-RHIZO",
+        "nombre_cientifico": "Rhizobium leguminosarum (Fijación de Nitrógeno)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": 4.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 7.20,
+        "precio_mayorista": 5.50,
+        "volumen_stock": 3500.0,
+        "Descripcion": "Bacteria simbiótica fijadora de nitrógeno atmosférico para leguminosas. Utilizada en investigación biológica agrícola y desarrollo de biofertilizantes.",
+        "Categoria": "Medio Ambiente / Agricultura"
+    },
+    "BIO-6600-77-7-STREP": {
+        "id_cepa_sku": "BIO-6600-77-7-STREP",
+        "nombre_cientifico": "Streptomyces coelicolor (Actinobacteria)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": -20.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 11.20,
+        "precio_mayorista": 9.00,
+        "volumen_stock": 1200.0,
+        "Descripcion": "Actinobacteria modelo para el estudio del desarrollo celular bacteriano y la síntesis de metabolitos secundarios activos como antibióticos policétidos.",
+        "Categoria": "Microbiología Industrial"
+    },
+    "BIO-9900-11-8-DEINO": {
+        "id_cepa_sku": "BIO-9900-11-8-DEINO",
+        "nombre_cientifico": "Deinococcus radiodurans (Radiotolerante)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": 4.0,
+        "requiere_licencia": true,
+        "precio_por_microlitro": 29.99,
+        "precio_mayorista": 24.00,
+        "volumen_stock": 500.0,
+        "Descripcion": "Bacteria extremófila célebre por su extraordinaria resistencia a la radiación ionizante, la deshidratación profunda y agentes mutágenos potentes.",
+        "Categoria": "Medio Ambiente / Agricultura"
+    }
+}

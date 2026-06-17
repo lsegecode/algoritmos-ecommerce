@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ producto.nombre_cientifico }} - Detalle Cepa{% endblock %}
+
+{% block content %}
+<section class="detail-section">
+    <div class="detail-header">
+        <a href="/" class="btn-back">
+            <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Volver al Catálogo
+        </a>
+    </div>
+
+    <div class="detail-grid">
+        <!-- Panel de Identificación Visual y Categoría -->
+        <div class="detail-visual-panel glass">
+            <div class="biotech-graphic-container">
+                <div class="biotech-glow"></div>
+                <div class="biotech-dna-icon">🧬</div>
+            </div>
+            
+            <div class="spec-quick-tags">
+                <span class="category-badge big">{{ producto.Categoria }}</span>
+                <span class="bioseguridad-badge level-{{ producto.nivel_bioseguridad }} big">
+                    Nivel de Bioseguridad {{ producto.nivel_bioseguridad }}
+                </span>
+            </div>
+
+            <div class="license-alert-box {% if producto.requiere_licencia %}required{% endif %}">
+                {% if producto.requiere_licencia %}
+                    <div class="license-icon">⚠️</div>
+                    <div class="license-text">
+                        <strong>Requiere Licencia Especial:</strong> Este producto requiere aprobación regulatoria para su manipulación y envío.
+                    </div>
+                {% else %}
+                    <div class="license-icon">✓</div>
+                    <div class="license-text">
+                        <strong>Manipulación Libre:</strong> No se requiere licencia adicional para su manipulación básica de laboratorio.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Panel de Especificaciones Técnicas (Registro) -->
+        <div class="detail-info-panel glass">
+            <h1 class="detail-title">{{ producto.nombre_cientifico }}</h1>
+            <p class="detail-sku-label">SKU Identificador: <code>{{ producto.id_cepa_sku }}</code></p>
+            
+            <div class="detail-description">
+                <h2>Descripción Científica</h2>
+                <p>{{ producto.Descripcion }}</p>
+            </div>
+
+            <div class="technical-specs">
+                <h2>Especificaciones de Registro</h2>
+                <table class="specs-table">
+                    <tbody>
+                        <tr>
+                            <th>Clave SKU (id_cepa_sku)</th>
+                            <td><code>{{ producto.id_cepa_sku }}</code></td>
+                        </tr>
+                        <tr>
+                            <th>Nombre Científico</th>
+                            <td><em>{{ producto.nombre_cientifico }}</em></td>
+                        </tr>
+                        <tr>
+                            <th>Categoría Científica</th>
+                            <td>{{ producto.Categoria }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nivel de Bioseguridad (BST)</th>
+                            <td>Clase {{ producto.nivel_bioseguridad }} (Recomendación CDC)</td>
+                        </tr>
+                        <tr>
+                            <th>Temperatura de Almacenamiento</th>
+                            <td class="temp-highlight">{{ producto.temp_almacenamiento }} °C</td>
+                        </tr>
+                        <tr>
+                            <th>Licencia Requerida</th>
+                            <td>{% if producto.requiere_licencia %}Sí, control especial{% else %}No, libre adquisición{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <th>Precio Regular por Microlitro</th>
+                            <td><strong>${{ "%.2f" | format(producto.precio_por_microlitro) }} USD</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Precio Mayorista (&ge; 500 μL)</th>
+                            <td class="wholesale-price-highlight"><strong>${{ "%.2f" | format(producto.precio_mayorista) }} USD</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Volumen Disponible en Stock</th>
+                            <td>
+                                <span id="stock-val-{{ producto.id_cepa_sku }}">
+                                    {{ producto.volumen_stock | int }}
+                                </span> μL
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Panel de Adición y Compra -->
+            <div class="purchase-action-card">
+                <h3>Agregar a Orden Científica</h3>
+                {% if producto.volumen_stock > 0 %}
+                    <div class="purchase-inputs">
+                        <div class="quantity-selector-wrapper">
+                            <label for="detail-qty">Cantidad (μL):</label>
+                            <div class="quantity-input-controls">
+                                <button type="button" class="btn-qty-adj" onclick="adjustDetailQty(-50)">-50</button>
+                                <input type="number" id="detail-qty" value="100" min="1" max="{{ producto.volumen_stock | int }}" oninput="updateDetailPriceCalculations()">
+                                <button type="button" class="btn-qty-adj" onclick="adjustDetailQty(50)">+50</button>
+                            </div>
+                        </div>
+                        
+                        <div class="pricing-preview">
+                            <div class="preview-row">
+                                <span>Tarifa Aplicada:</span>
+                                <span id="applied-rate-label" class="rate-badge">Regular</span>
+                            </div>
+                            <div class="preview-row total">
+                                <span>Subtotal:</span>
+                                <span id="detail-price-preview">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button 
+                        id="btn-add-{{ producto.id_cepa_sku }}"
+                        class="btn-primary btn-block" 
+                        onclick="addCustomQtyToCart('{{ producto.id_cepa_sku }}', {{ producto.volumen_stock }}, '{{ producto.nombre_cientifico }}', {{ producto.precio_por_microlitro }}, {{ producto.precio_mayorista }})">
+                        Agregar al Carrito
+                    </button>
+                {% else %}
+                    <div class="out-of-stock-alert">
+                        <span>Sin existencias disponibles en el inventario de laboratorio actual.</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Variables de contexto para cálculos locales en el detalle
+    const SKU = "{{ producto.id_cepa_sku }}";
+    const MAX_STOCK = {{ producto.volumen_stock | int }};
+    const PRICE_REGULAR = {{ producto.precio_por_microlitro }};
+    const PRICE_WHOLESALE = {{ producto.precio_mayorista }};
+
+    function adjustDetailQty(amount) {
+        const input = document.getElementById('detail-qty');
+        let val = parseInt(input.value) || 0;
+        val += amount;
+        if (val < 1) val = 1;
+        if (val > MAX_STOCK) val = MAX_STOCK;
+        input.value = val;
+        updateDetailPriceCalculations();
+    }
+
+    function updateDetailPriceCalculations() {
+        const input = document.getElementById('detail-qty');
+        if (!input) return;
+        
+        let qty = parseInt(input.value) || 0;
+        if (qty < 1) qty = 1;
+        if (qty > MAX_STOCK) qty = MAX_STOCK;
+        input.value = qty;
+        
+        const rateLabel = document.getElementById('applied-rate-label');
+        const pricePreview = document.getElementById('detail-price-preview');
+        
+        // Si compran 500 uL o más, aplica tarifa mayorista
+        let activePrice = PRICE_REGULAR;
+        if (qty >= 500) {
+            activePrice = PRICE_WHOLESALE;
+            rateLabel.textContent = "Mayorista";
+            rateLabel.className = "rate-badge wholesale";
+        } else {
+            rateLabel.textContent = "Regular";
+            rateLabel.className = "rate-badge";
+        }
+        
+        const subtotal = qty * activePrice;
+        pricePreview.textContent = "$" + subtotal.toFixed(2);
+    }
+
+    function addCustomQtyToCart(sku, maxStock, name, regPrice, wholesalePrice) {
+        const input = document.getElementById('detail-qty');
+        const qty = parseInt(input.value) || 0;
+        
+        if (qty <= 0) {
+            showToast("La cantidad debe ser mayor a 0", true);
+            return;
+        }
+        
+        // Agregar al carrito llamando a la función global
+        // En cart.js, actualizaremos la función para soportar añadir cantidades arbitrarias
+        addArbitraryQtyToCart(sku, qty, maxStock, name, regPrice, wholesalePrice);
+    }
+
+    // Inicializar cálculos al cargar la página
+    document.addEventListener("DOMContentLoaded", () => {
+        updateDetailPriceCalculations();
+    });
+</script>
+{% endblock %}

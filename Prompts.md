@@ -38,4 +38,37 @@ Crea un documento llamado propuesta.md, corto, el e-commerce no debe tener demas
 
 # Numero 1
 (En primer lugar se analiza el archivo propuesta.md y la respuesta del Agente)
-Revisando la propuesta tengo varias dudas respecto a la implementación 
+Revisando la propuesta tengo varias dudas respecto a la implementación, en primer lugar mi registro debería ser una combinación del registro json que tengo yo:
+{
+    "BIO-9003-98-9-GFP": {
+        "id_cepa_cas": "BIO-9003-98-9-GFP",
+        "nombre_cientifico": "Aequorea victoria Fluorescent Protein Strain",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": -20.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 14.25,
+        "volumen_stock": 1000.0
+    },
+    "BIO-1100-22-4-BACS": {
+        "id_cepa_cas": "BIO-1100-22-4-BACS",
+        "nombre_cientifico": "Bacillus subtilis (Cepa Bioluminiscente Educativa)",
+        "nivel_bioseguridad": 1,
+        "temp_almacenamiento": 4.0,
+        "requiere_licencia": false,
+        "precio_por_microlitro": 8.50,
+        "volumen_stock": 2500.0
+    }
+}
+
+Agregando las columnas "Descripcion", "precio_mayorista" (despues de precio por microlitro), "Categoria". Ademas cambiar mi id_cepa_cas por la clave elegida "id_cepa_sku"
+
+Crea el diseño inicial del e-commerce con 10 productos utilizando el formato de JSON brindado. El framework a utilizar es FLASK, propone una arquitectura sencilla, basandote principalmente en funciones. 
+
+Ayudame a definir los requerimientos básicos y como estructurar el procedimiento de añadir productos al carrito. No utilizaremos bases de datos por lo que el carrito se guardará en memoria caché, lo que significa que al recargar la página se perderán los productos agregados.
+
+## Respuesta (plan de implementación brindado por la IA)
+
+El plan de implementación completo con el diseño de la arquitectura, definición de la clave de registro, campos y flujo del carrito en memoria caché ha sido detallado e incorporado en el proyecto en el archivo [plan_implementacion.md](./plan_implementacion.md).
+
+
+
