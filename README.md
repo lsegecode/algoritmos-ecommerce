@@ -22,7 +22,7 @@ Para publicar el proyecto en la web de forma 100% gratuita y sin necesidad de co
     *   Haz clic en **Save** (Guardar).
 4.  **Acceder a la URL Pública:**
     *   GitHub comenzará a compilar el sitio. En un par de minutos, refresca la página de Settings > Pages y verás un banner en la parte superior con tu URL pública:
-        `https://<tu-usuario>.github.io/<tu-repositorio>/index.html`
+        `https://lsegecode.github.io/algoritmos-ecommerce/index.html`
     *   *Nota: Recuerda ingresar con `/index.html` al final para abrir la interfaz del catálogo directamente.*
 
 ---
