@@ -562,16 +562,22 @@ async function initStaticPrompts() {
         // Separar secciones
         const seccionPre = getPromptSection(text, "# Pre creacion", "# Numero 1");
         const seccionNum1 = getPromptSection(text, "# Numero 1", "# Numero 2");
-        const seccionNum2 = getPromptSection(text, "# Numero 2");
+        const seccionNum2 = getPromptSection(text, "# Numero 2", "# Numero 3");
+        const seccionNum3 = getPromptSection(text, "# Numero 3", "# Numero 4");
+        const seccionNum4 = getPromptSection(text, "# Numero 4", "# Numero 5");
+        const seccionNum5 = getPromptSection(text, "# Numero 5");
         
         // Renderizar en el slideshow
         document.getElementById('slide-content-0').innerHTML = markdownToHtml(seccionPre);
         document.getElementById('slide-content-1').innerHTML = markdownToHtml(seccionNum1);
         document.getElementById('slide-content-2').innerHTML = markdownToHtml(seccionNum2);
+        document.getElementById('slide-content-3').innerHTML = markdownToHtml(seccionNum3);
+        document.getElementById('slide-content-4').innerHTML = markdownToHtml(seccionNum4);
+        document.getElementById('slide-content-5').innerHTML = markdownToHtml(seccionNum5);
     } catch(err) {
         console.error("Error cargando Prompts.md en estático:", err);
         // Mensaje de fallback
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 6; i++) {
             const container = document.getElementById(`slide-content-${i}`);
             if (container) container.innerHTML = `<p>Error al cargar el archivo Prompts.md. Asegúrate de estar corriendo la app en un servidor (como Live Server o GitHub Pages).</p>`;
         }

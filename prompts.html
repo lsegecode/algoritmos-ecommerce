@@ -58,7 +58,7 @@
                     <!-- Slide 0 -->
                     <div class="prompt-slide active" id="slide-0">
                         <div class="slide-meta">
-                            <span class="slide-badge">Paso 1 de 3</span>
+                            <span class="slide-badge">Paso 1 de 6</span>
                             <h2>Fase Inicial (Pre-creación)</h2>
                             <p class="slide-subtitle">Definición de requerimientos básicos de BioTinker</p>
                         </div>
@@ -70,7 +70,7 @@
                     <!-- Slide 1 -->
                     <div class="prompt-slide" id="slide-1">
                         <div class="slide-meta">
-                            <span class="slide-badge">Paso 2 de 3</span>
+                            <span class="slide-badge">Paso 2 de 6</span>
                             <h2>Fase 1 (Prompt 1)</h2>
                             <p class="slide-subtitle">Diseño del registro Producto y formato JSON inicial</p>
                         </div>
@@ -82,12 +82,48 @@
                     <!-- Slide 2 -->
                     <div class="prompt-slide" id="slide-2">
                         <div class="slide-meta">
-                            <span class="slide-badge">Paso 3 de 3</span>
+                            <span class="slide-badge">Paso 3 de 6</span>
                             <h2>Fase 2 (Prompt 2)</h2>
                             <p class="slide-subtitle">Construcción del Slideshow de Prompts y desplegables</p>
                         </div>
                         <div class="slide-content markdown-body" id="slide-content-2">
                             <p>Cargando prompt número 2...</p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="prompt-slide" id="slide-3">
+                        <div class="slide-meta">
+                            <span class="slide-badge">Paso 4 de 6</span>
+                            <h2>Fase 3 (Prompt 3)</h2>
+                            <p class="slide-subtitle">Alternativas de despliegue gratuito para URL pública</p>
+                        </div>
+                        <div class="slide-content markdown-body" id="slide-content-3">
+                            <p>Cargando prompt número 3...</p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4 -->
+                    <div class="prompt-slide" id="slide-4">
+                        <div class="slide-meta">
+                            <span class="slide-badge">Paso 5 de 6</span>
+                            <h2>Fase 4 (Prompt 4)</h2>
+                            <p class="slide-subtitle">Estructuración de documentación y README del proyecto</p>
+                        </div>
+                        <div class="slide-content markdown-body" id="slide-content-4">
+                            <p>Cargando prompt número 4...</p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5 -->
+                    <div class="prompt-slide" id="slide-5">
+                        <div class="slide-meta">
+                            <span class="slide-badge">Paso 6 de 6</span>
+                            <h2>Fase 5 (Prompt 5)</h2>
+                            <p class="slide-subtitle">Solución a errores de compilación de GitHub Pages</p>
+                        </div>
+                        <div class="slide-content markdown-body" id="slide-content-5">
+                            <p>Cargando prompt número 5...</p>
                         </div>
                     </div>
                 </div>
@@ -105,6 +141,9 @@
                         <span class="indicator active" onclick="goToSlide(0)"></span>
                         <span class="indicator" onclick="goToSlide(1)"></span>
                         <span class="indicator" onclick="goToSlide(2)"></span>
+                        <span class="indicator" onclick="goToSlide(3)"></span>
+                        <span class="indicator" onclick="goToSlide(4)"></span>
+                        <span class="indicator" onclick="goToSlide(5)"></span>
                     </div>
 
                     <button class="btn-nav next" onclick="changeSlide(1)">
@@ -222,7 +261,7 @@
     <!-- Lógica de control de diapositivas estática -->
     <script>
         let currentSlideIndex = 0;
-        const totalSlides = 3;
+        const totalSlides = 6;
 
         function showSlide(index) {
             if (index >= totalSlides) currentSlideIndex = 0;

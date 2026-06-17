@@ -143,7 +143,7 @@ def obtener_seccion_prompts(contenido, cabecera_inicio, cabecera_fin=None):
 
 def cargar_secciones_prompts():
     """
-    Lee Prompts.md y lo separa en los tres bloques correspondientes
+    Lee Prompts.md y lo separa en los bloques correspondientes
     a las fases de interacción con la IA.
     """
     prompts_path = os.path.join(os.path.dirname(__file__), 'Prompts.md')
@@ -156,7 +156,10 @@ def cargar_secciones_prompts():
     # Extraer las secciones por cabeceras
     seccion_pre = obtener_seccion_prompts(contenido, "# Pre creacion", "# Numero 1")
     seccion_num1 = obtener_seccion_prompts(contenido, "# Numero 1", "# Numero 2")
-    seccion_num2 = obtener_seccion_prompts(contenido, "# Numero 2")
+    seccion_num2 = obtener_seccion_prompts(contenido, "# Numero 2", "# Numero 3")
+    seccion_num3 = obtener_seccion_prompts(contenido, "# Numero 3", "# Numero 4")
+    seccion_num4 = obtener_seccion_prompts(contenido, "# Numero 4", "# Numero 5")
+    seccion_num5 = obtener_seccion_prompts(contenido, "# Numero 5")
     
     # Procesar markdown a HTML
     slides = [
@@ -174,9 +177,25 @@ def cargar_secciones_prompts():
             'titulo': 'Fase 2 (Prompt 2)',
             'subtitulo': 'Construcción del Slideshow de Prompts y desplegables',
             'html': markdown_a_html(seccion_num2)
+        },
+        {
+            'titulo': 'Fase 3 (Prompt 3)',
+            'subtitulo': 'Alternativas de despliegue gratuito para URL pública',
+            'html': markdown_a_html(seccion_num3)
+        },
+        {
+            'titulo': 'Fase 4 (Prompt 4)',
+            'subtitulo': 'Estructuración de documentación y README del proyecto',
+            'html': markdown_a_html(seccion_num4)
+        },
+        {
+            'titulo': 'Fase 5 (Prompt 5)',
+            'subtitulo': 'Solución a errores de compilación de GitHub Pages',
+            'html': markdown_a_html(seccion_num5)
         }
     ]
     return slides
+
 
 def cargar_archivo_markdown(nombre_archivo):
     """

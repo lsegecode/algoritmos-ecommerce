@@ -119,3 +119,31 @@ El archivo [README.md](./README.md) ha sido modificado y reescrito por completo 
 2. **Arquitectura del Proyecto**: Se explicó el diseño del **Soporte Híbrido/Dual** (Flask para ejecución local y Frontend Estático interactivo con sessionStorage para la URL pública en producción), incluyendo un diagrama de flujo de arquitectura.
 3. **Estructura del Proyecto e Inventario de Archivos**: Se creó un listado categorizado describiendo la función que cumple cada archivo en la raíz, en `templates/` y en `static/`.
 4. **Historial y Archivos Deprecados**: Se documentaron los archivos deprecados (`apps.py`, `app_v2.py` y `propuesta_registro.json`), aclarando sus propósitos en fases previas y el porqué de sus reemplazos o integraciones en la versión definitiva de producción (`app.py`, `productos.json` y `static_app.js`).
+
+
+
+# Numero 5 
+Tengo un problema con el deploy en github pages al hacer una build.
+
+## Respuesta
+El error de compilación (y el consiguiente 404) ocurrió por lo siguiente:
+
+Jekyll por defecto: Cuando activas GitHub Pages desde una rama sin configurar un flujo personalizado de GitHub Actions, GitHub procesa tu repositorio usando Jekyll (su motor de sitios estáticos).
+Conflicto de sintaxis: Jekyll procesa todos los archivos Markdown (.md). En el archivo plan_implementacion_despliegue.md en la línea 71 tienes el fragmento {% %} (que describe la sintaxis de plantillas de Flask/Jinja2). Sin embargo, Jekyll utiliza esa misma sintaxis ({% %}) para sus etiquetas Liquid. Al intentar compilar ese bloque vacío o inválido, Jekyll arrojó un error de compilación y abortó la tarea de construcción (build), lo que causó que la tarea de despliegue (deploy) se omitiera por completo.
+Solución aplicada:
+He creado un archivo llamado 
+
+.nojekyll
+ en la raíz de tu proyecto.
+
+Este archivo le indica a GitHub Pages que no intente procesar ni compilar el sitio con Jekyll, sino que publique directamente los archivos estáticos HTML, CSS y JS tal como están en tu repositorio. Esto no solo soluciona el error de compilación de las plantillas de Flask, sino que también acelera el tiempo de despliegue.
+
+Ya he guardado, confirmado (committed) y subido (pushed) el cambio a tu repositorio remoto:
+
+Creé el archivo .nojekyll
+Corrí git add .nojekyll
+Corrí git commit -m "chore: add .nojekyll to bypass Jekyll build on GitHub Pages"
+Corrí git push
+Pasos siguientes:
+Ve a la pestaña Actions de tu repositorio en GitHub para monitorear el nuevo flujo de trabajo que se acaba de disparar.
+Una vez que las tareas de build y deploy terminen en color verde (generalmente toma unos 30-60 segundos), podrás acceder a tu sitio en: 👉 https://lsegecode.github.io/algoritmos-ecommerce/index.html
