@@ -41,19 +41,22 @@ Para representar los productos de biotecnología en **BioTinker**, se define la 
 
 | Nombre del Campo | Tipo de Dato | Descripción | Ejemplo |
 | :--- | :--- | :--- | :--- |
-| `sku` *(Clave)* | `str` (String) | Stock Keeping Unit. Identificador alfanumérico único. | `"ENZ-ECORI-01"` |
-| `nombre` | `str` (String) | Nombre comercial del reactivo, cultivo o enzima. | `"Enzima de Restricción EcoRI"` |
-| `categoria` | `str` (String) | Clasificación taxonómica o comercial del producto. | `"Enzimas"` |
-| `descripcion` | `str` (String) | Detalles científicos y aplicaciones sugeridas. | `"Corta ADN en la secuencia G/AATTC"` |
-| `precio` | `float` (Real) | Costo unitario en pesos / dólares. | `12500.50` |
-| `stock` | `int` (Entero) | Cantidad de unidades físicas disponibles. | `15` |
-| `temp_conservacion` | `float` (Real) | Temperatura óptima de almacenamiento en °C. | `-20.0` |
+| `id_cepa_sku` *(Clave)* | `str` (String) | Stock Keeping Unit. Identificador alfanumérico único. | `"BIO-9003-98-9-GFP"` |
+| `nombre_cientifico` | `str` (String) | Nombre taxonómico/científico de la cepa o reactivo. | `"Aequorea victoria Fluorescent Protein Strain"` |
+| `nivel_bioseguridad` | `int` (Entero) | Nivel de bioseguridad recomendado para manipulación. | `1` |
+| `temp_almacenamiento` | `float` (Real) | Temperatura de conservación recomendada en °C. | `-20.0` |
+| `requiere_licencia` | `bool` (Booleano) | Indica si requiere aprobación regulatoria especial. | `false` |
+| `precio_por_microlitro` | `float` (Real) | Tarifa estándar por microlitro en USD. | `14.25` |
+| `precio_mayorista` | `float` (Real) | Tarifa mayorista reducida por microlitro (&ge; 500 μL). | `11.50` |
+| `volumen_stock` | `float` (Real) | Volumen total de stock disponible en microlitros. | `1000.0` |
+| `Descripcion` | `str` (String) | Resumen y detalles técnicos específicos del producto. | `"Cepa modificada genéticamente..."` |
+| `Categoria` | `str` (String) | Clasificación científica o de laboratorio del producto. | `"Bioluminiscencia"` |
 
 ### Identificación y Justificación de la Clave
-*   **Clave Elegida**: `sku` (Stock Keeping Unit).
+*   **Clave Elegida**: `id_cepa_sku` (Identificador de Cepa SKU).
 *   **Justificación**: 
     1.  **Unicidad**: El SKU es un código normalizado e inequívoco para cada tipo de producto en inventario. No se repite entre diferentes artículos.
-    2.  **Eficiencia de Búsqueda**: Al mapear el catálogo en un diccionario de Python (`{sku: Producto}`), la búsqueda de un producto específico para añadir al carrito o ver sus detalles se realiza en tiempo constante ($O(1)$) usando su clave `sku`.
+    2.  **Eficiencia de Búsqueda**: Al mapear el catálogo en un diccionario de Python (`{id_cepa_sku: Producto}`), la búsqueda de un producto específico para añadir al carrito o ver sus detalles se realiza en tiempo constante ($O(1)$) usando su clave `id_cepa_sku`.
     3.  **Semántica del Dominio**: En sistemas reales de inventario y biotecnología, los nombres de los compuestos o cepas pueden ser similares o cambiar (ej. cambiar de proveedor o marca), mientras que el código de inventario permanece inmutable para esa presentación específica.
 
 ---

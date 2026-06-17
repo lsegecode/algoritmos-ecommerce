@@ -147,3 +147,6 @@ Corrí git push
 Pasos siguientes:
 Ve a la pestaña Actions de tu repositorio en GitHub para monitorear el nuevo flujo de trabajo que se acaba de disparar.
 Una vez que las tareas de build y deploy terminen en color verde (generalmente toma unos 30-60 segundos), podrás acceder a tu sitio en: 👉 https://lsegecode.github.io/algoritmos-ecommerce/index.html
+
+
+
