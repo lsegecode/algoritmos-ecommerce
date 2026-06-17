@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Prompts e Interacciones - BioTinker{% endblock %}
+
+{% block content %}
+<section class="prompts-section">
+    <div class="catalog-hero">
+        <h1>Bitácora de Interacciones con la IA</h1>
+        <p>Demostración y registro de prompts académicos y documentación técnica del proyecto.</p>
+    </div>
+
+    <!-- Contenedor del Slideshow de Prompts -->
+    <div class="slideshow-container glass">
+        <div class="slideshow-header">
+            <div class="console-controls">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+            </div>
+            <span class="console-title">PROMPT_CONSOLE // SLIDESHOW</span>
+        </div>
+
+        <div class="slides-wrapper">
+            {% for slide in slides %}
+                <div class="prompt-slide {% if loop.first %}active{% endif %}" id="slide-{{ loop.index0 }}">
+                    <div class="slide-meta">
+                        <span class="slide-badge">Paso {{ loop.index }} de {{ slides|length }}</span>
+                        <h2>{{ slide.titulo }}</h2>
+                        <p class="slide-subtitle">{{ slide.subtitulo }}</p>
+                    </div>
+                    <div class="slide-content markdown-body">
+                        {{ slide.html | safe }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Navegación del Slideshow -->
+        <div class="slideshow-nav">
+            <button class="btn-nav prev" onclick="changeSlide(-1)">
+                <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Anterior
+            </button>
+            
+            <div class="slide-indicators">
+                {% for slide in slides %}
+                    <span class="indicator {% if loop.first %}active{% endif %}" onclick="goToSlide({{ loop.index0 }})"></span>
+                {% endfor %}
+            </div>
+
+            <button class="btn-nav next" onclick="changeSlide(1)">
+                Siguiente
+                <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenedor de Desplegables de Documentación -->
+    <div class="documentation-accordion-section">
+        <h2 class="section-title">Documentación Técnica Vinculada</h2>
+        
+        <!-- Desplegable 1: propuesta.md -->
+        <details class="futuristic-details glass" id="details-propuesta">
+            <summary class="futuristic-summary">
+                <span class="summary-title">
+                    <span class="summary-icon">📄</span> 
+                    Propuesta del Proyecto (propuesta.md)
+                </span>
+                <span class="chevron">
+                    <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
+            </summary>
+            <div class="details-content markdown-body">
+                {{ propuesta_html | safe }}
+            </div>
+        </details>
+
+        <!-- Desplegable 2: plan_implementacion.md -->
+        <details class="futuristic-details glass" id="details-plan">
+            <summary class="futuristic-summary">
+                <span class="summary-title">
+                    <span class="summary-icon">🛠️</span> 
+                    Plan de Implementación Desarrollado (plan_implementacion.md)
+                </span>
+                <span class="chevron">
+                    <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
+            </summary>
+            <div class="details-content markdown-body">
+                {{ plan_html | safe }}
+            </div>
+        </details>
+
+        <!-- Desplegable 3: plan_implementacion_despliegue.md -->
+        <details class="futuristic-details glass" id="details-plan-despliegue">
+            <summary class="futuristic-summary">
+                <span class="summary-title">
+                    <span class="summary-icon">🚀</span> 
+                    Plan de Implementación de Despliegue (plan_implementacion_despliegue.md)
+                </span>
+                <span class="chevron">
+                    <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
+            </summary>
+            <div class="details-content markdown-body">
+                {{ plan_despliegue_html | safe }}
+            </div>
+        </details>
+    </div>
+</section>
+
+<!-- Lógica del Slideshow -->
+<script>
+    let currentSlideIndex = 0;
+    const totalSlides = {{ slides|length }};
+
+    function showSlide(index) {
+        // Asegurar rango circular
+        if (index >= totalSlides) currentSlideIndex = 0;
+        else if (index < 0) currentSlideIndex = totalSlides - 1;
+        else currentSlideIndex = index;
+
+        // Ocultar todos los slides
+        const slides = document.querySelectorAll('.prompt-slide');
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+        });
+
+        // Desactivar todos los indicadores
+        const indicators = document.querySelectorAll('.indicator');
+        indicators.forEach(ind => {
+            ind.classList.remove('active');
+        });
+
+        // Mostrar slide e indicador activo
+        document.getElementById(`slide-${currentSlideIndex}`).classList.add('active');
+        indicators[currentSlideIndex].classList.add('active');
+    }
+
+    function changeSlide(direction) {
+        showSlide(currentSlideIndex + direction);
+    }
+
+    function goToSlide(index) {
+        showSlide(index);
+    }
+</script>
+{% endblock %}

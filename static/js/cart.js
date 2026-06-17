@@ -152,82 +152,152 @@ function updateCartUI() {
 }
 
 /**
- * Confirmar Compra (Checkout) enviando datos a Flask API
+ * Confirmar Compra (Checkout)
+ * Detecta si corre en modo estático (GitHub Pages / local) o en modo Flask
+ * y procesa la compra según corresponda.
  */
 function checkout() {
     const checkoutBtn = document.getElementById('checkout-btn');
     checkoutBtn.disabled = true;
     checkoutBtn.textContent = 'Procesando Envío Científico...';
     
-    // Mapear items al formato esperado por el backend
-    const itemsPayload = Object.keys(cart).map(sku => {
-        return {
-            id_cepa_sku: sku,
-            cantidad: cart[sku].cantidad
-        };
-    });
-    
-    fetch('/api/comprar', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ items: itemsPayload })
-    })
-    .then(response => response.json().then(data => ({ status: response.status, body: data })))
-    .then(res => {
-        if (res.status === 200 && res.body.success) {
-            // Actualizar stock en la vista de forma dinámica (efecto reactivo)
-            res.body.actualizaciones.forEach(act => {
-                const sku = act.id_cepa_sku;
-                const nuevoStock = act.nuevo_stock;
-                
-                // Actualizar etiquetas de stock en el catálogo e información de detalle si existen
-                const stockLabel = document.getElementById(`stock-val-${sku}`);
-                if (stockLabel) {
-                    if (nuevoStock > 0) {
-                        stockLabel.textContent = `${Math.floor(nuevoStock)} μL`;
-                    } else {
-                        stockLabel.textContent = 'Sin Stock';
-                        stockLabel.classList.add('stock-low');
-                    }
-                }
-                
-                // Si estamos en la página del catálogo, deshabilitar el botón si el stock es 0
-                const addBtn = document.getElementById(`btn-add-${sku}`);
-                const card = document.getElementById(`card-${sku}`);
-                if (nuevoStock <= 0) {
-                    if (addBtn) {
-                        addBtn.disabled = true;
-                        addBtn.textContent = 'Sin Stock';
-                    }
-                    if (card) {
-                        card.classList.add('out-of-stock-card');
-                    }
-                }
-            });
+    // Detectar si está corriendo en modo estático (GitHub Pages, Live Server o archivo local)
+    const isStaticMode = window.location.pathname.endsWith('.html') || 
+                         window.location.protocol === 'file:' || 
+                         window.location.hostname.includes('github.io') ||
+                         window.location.hostname.includes('localhost') && !window.location.port; // si es estático en localhost sin puerto
+                         
+    if (isStaticMode) {
+        // --- PROCESAMIENTO CLIENT-SIDE (MODO ESTÁTICO) ---
+        // 1. Validar stock disponible para todos los productos en el carrito
+        for (let sku of Object.keys(cart)) {
+            const item = cart[sku];
+            const prod = productsDB[sku];
             
-            // Éxito: Limpiar carrito
-            cart = {};
-            updateCartUI();
-            toggleCart(); // Cerrar sidebar
+            if (!prod) {
+                showToast(`El producto con SKU ${sku} no existe.`, true, 'error');
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = 'Confirmar Compra Recombinante';
+                return;
+            }
             
-            // Mostrar Toast Exitoso
-            showToast(res.body.message, false, 'success');
-        } else {
-            // Error en validación de stock
-            showToast(res.body.error || 'Ocurrió un error al procesar la compra.', true, 'error');
-            checkoutBtn.disabled = false;
+            if (prod.volumen_stock < item.cantidad) {
+                showToast(`Stock insuficiente para ${prod.nombre_cientifico}. Disponible: ${Math.floor(prod.volumen_stock)} μL.`, true, 'error');
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = 'Confirmar Compra Recombinante';
+                return;
+            }
         }
-    })
-    .catch(err => {
-        console.error('Error en checkout:', err);
-        showToast('Error de conexión con el laboratorio. Reintente.', true, 'error');
+        
+        // 2. Descontar stock localmente en memoria y actualizar interfaz
+        Object.keys(cart).forEach(sku => {
+            const item = cart[sku];
+            productsDB[sku].volumen_stock -= item.cantidad;
+            const nuevoStock = productsDB[sku].volumen_stock;
+            
+            // Actualizar DOM de stock
+            const stockLabel = document.getElementById(`stock-val-${sku}`);
+            if (stockLabel) {
+                if (nuevoStock > 0) {
+                    stockLabel.textContent = `${Math.floor(nuevoStock)} μL`;
+                } else {
+                    stockLabel.textContent = 'Sin Stock';
+                    stockLabel.classList.add('stock-low');
+                }
+            }
+            
+            // Deshabilitar botón de agregar si el stock llegó a 0
+            const addBtn = document.getElementById(`btn-add-${sku}`);
+            const card = document.getElementById(`card-${sku}`);
+            if (nuevoStock <= 0) {
+                if (addBtn) {
+                    addBtn.disabled = true;
+                    addBtn.textContent = 'Sin Stock';
+                }
+                if (card) {
+                    card.classList.add('out-of-stock-card');
+                }
+            }
+        });
+        
+        // Guardar cambios del stock en sessionStorage
+        if (typeof saveProductsToSession === "function") {
+            saveProductsToSession();
+        }
+        
+        // Limpiar carrito y cerrar sidebar
+        cart = {};
+        updateCartUI();
+        toggleCart();
+        
+        showToast('¡Compra procesada con éxito! Su pedido científico está en camino.', false, 'success');
         checkoutBtn.disabled = false;
-    })
-    .finally(() => {
         checkoutBtn.textContent = 'Confirmar Compra Recombinante';
-    });
+        
+    } else {
+        // --- PROCESAMIENTO SERVER-SIDE (MODO FLASK) ---
+        const itemsPayload = Object.keys(cart).map(sku => {
+            return {
+                id_cepa_sku: sku,
+                cantidad: cart[sku].cantidad
+            };
+        });
+        
+        fetch('/api/comprar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: itemsPayload })
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(res => {
+            if (res.status === 200 && res.body.success) {
+                res.body.actualizaciones.forEach(act => {
+                    const sku = act.id_cepa_sku;
+                    const nuevoStock = act.nuevo_stock;
+                    
+                    const stockLabel = document.getElementById(`stock-val-${sku}`);
+                    if (stockLabel) {
+                        if (nuevoStock > 0) {
+                            stockLabel.textContent = `${Math.floor(nuevoStock)} μL`;
+                        } else {
+                            stockLabel.textContent = 'Sin Stock';
+                            stockLabel.classList.add('stock-low');
+                        }
+                    }
+                    
+                    const addBtn = document.getElementById(`btn-add-${sku}`);
+                    const card = document.getElementById(`card-${sku}`);
+                    if (nuevoStock <= 0) {
+                        if (addBtn) {
+                            addBtn.disabled = true;
+                            addBtn.textContent = 'Sin Stock';
+                        }
+                        if (card) {
+                            card.classList.add('out-of-stock-card');
+                        }
+                    }
+                });
+                
+                cart = {};
+                updateCartUI();
+                toggleCart();
+                showToast(res.body.message, false, 'success');
+            } else {
+                showToast(res.body.error || 'Ocurrió un error al procesar la compra.', true, 'error');
+                checkoutBtn.disabled = false;
+            }
+        })
+        .catch(err => {
+            console.error('Error en checkout:', err);
+            showToast('Error de conexión con el laboratorio. Reintente.', true, 'error');
+            checkoutBtn.disabled = false;
+        })
+        .finally(() => {
+            checkoutBtn.textContent = 'Confirmar Compra Recombinante';
+        });
+    }
 }
 
 /**

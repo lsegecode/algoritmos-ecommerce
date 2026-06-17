@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}BioTinker - E-Commerce Biotecnológico{% endblock %}</title>
-    <!-- Google Fonts: Outfit (headings) e Inter (body) -->
+    <title>Cargando Detalle... - BioTinker</title>
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- Main Style Sheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="static/css/styles.css">
 </head>
 <body>
     <header class="app-header">
         <div class="header-container">
-            <a href="/" class="logo">
+            <a href="index.html" class="logo">
                 <span class="logo-icon">🧬</span>
                 <span class="logo-text">Bio<span class="logo-highlight">Tinker</span></span>
             </a>
             
             <nav class="nav-links">
-                <a href="/" class="nav-link">Catálogo</a>
+                <a href="index.html" class="nav-link">Catálogo</a>
                 <span class="nav-divider">|</span>
-                <a href="/prompts" target="_blank" class="nav-link nav-context-link">Materia: Algoritmos y Estructuras de Datos</a>
+                <a href="prompts.html" target="_blank" class="nav-link nav-context-link">Materia: Algoritmos y Estructuras de Datos</a>
             </nav>
             
             <button id="cart-toggle-btn" class="cart-trigger-btn" onclick="toggleCart()">
@@ -37,7 +37,29 @@
     </header>
 
     <main class="main-content">
-        {% block content %}{% endblock %}
+        <section class="detail-section">
+            <div class="detail-header">
+                <a href="index.html" class="btn-back">
+                    <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Volver al Catálogo
+                </a>
+            </div>
+
+            <div class="detail-grid">
+                <!-- Panel Izquierdo: Se poblará con JS -->
+                <div class="detail-visual-panel glass" id="detail-visual-panel-static">
+                    <p>Cargando información visual...</p>
+                </div>
+
+                <!-- Panel Derecho: Se poblará con JS -->
+                <div class="detail-info-panel glass" id="detail-info-panel-static">
+                    <p>Cargando especificaciones técnicas del registro...</p>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Panel Lateral del Carrito (Sidebar) -->
@@ -48,7 +70,6 @@
         </div>
         
         <div id="cart-items-container" class="cart-items-container">
-            <!-- Los productos agregados se renderizarán dinámicamente aquí -->
             <div class="cart-empty-message">
                 <p>Tu carrito está vacío.</p>
                 <small>Agrega cepas o reactivos del catálogo.</small>
@@ -64,25 +85,23 @@
                 Confirmar Compra Recombinante
             </button>
             <p class="cart-warning-note">
-                ⚠️ *Nota: Los datos del carrito se mantienen únicamente en la memoria caché del navegador y se perderán si recargas la página.*
+                ⚠️ *Nota: Los datos de stock y del carrito se mantienen únicamente en la memoria caché del navegador y se perderán si cierras el navegador.*
             </p>
         </div>
     </div>
     
-    <!-- Fondo oscuro difuminado al abrir el carrito -->
     <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
-
-    <!-- Toast Notification (para alertas elegantes de stock o éxito) -->
     <div id="toast-notification" class="toast-notification"></div>
 
     <footer class="app-footer">
         <div class="footer-container">
             <p>&copy; 2026 BioTinker - Algoritmos y Estructura de Datos (Actividad Formativa)</p>
-            <p class="footer-subtext">Implementado en Flask con Almacenamiento en Memoria de Servidor.</p>
+            <p class="footer-subtext">Hospedaje Estático Cliente-Servidor en GitHub Pages sin base de datos.</p>
         </div>
     </footer>
 
-    <!-- Cart JavaScript Logic -->
-    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <!-- Scripts -->
+    <script src="static/js/cart.js"></script>
+    <script src="static/js/static_app.js"></script>
 </body>
 </html>

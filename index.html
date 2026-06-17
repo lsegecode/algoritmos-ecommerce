@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Cepas - BioTinker (Estático)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🧬</span>
+                <span class="logo-text">Bio<span class="logo-highlight">Tinker</span></span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link active">Catálogo</a>
+                <span class="nav-divider">|</span>
+                <a href="prompts.html" target="_blank" class="nav-link nav-context-link">Materia: Algoritmos y Estructuras de Datos</a>
+            </nav>
+            
+            <button id="cart-toggle-btn" class="cart-trigger-btn" onclick="toggleCart()">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span id="cart-badge" class="cart-badge">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="catalog-section">
+            <div class="catalog-hero">
+                <h1>Catálogo de Suministros Biotecnológicos (Versión Estática)</h1>
+                <p>Procesamiento 100% en navegador para demostraciones públicas en GitHub Pages.</p>
+            </div>
+
+            <!-- Barra de Filtros y Búsqueda -->
+            <div class="filters-container glass">
+                <form method="GET" action="index.html" class="filters-form">
+                    <div class="form-group search-group">
+                        <label for="search-input">Buscar</label>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="search-input" name="q" placeholder="Ej: GFP, Bacillus, SKU...">
+                            <button type="submit" class="search-btn">
+                                <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category-select">Categoría</label>
+                        <select id="category-select" name="categoria" onchange="this.form.submit()">
+                            <option value="Todas">Todas las categorías</option>
+                            <!-- Se poblará dinámicamente con JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sort-select">Ordenar por</label>
+                        <select id="sort-select" name="orden" onchange="this.form.submit()">
+                            <option value="nombre">Nombre Científico (A-Z)</option>
+                            <option value="precio_asc">Precio: Menor a Mayor</option>
+                            <option value="precio_desc">Precio: Mayor a Menor</option>
+                            <option value="stock_asc">Stock: Menor a Mayor</option>
+                            <option value="stock_desc">Stock: Mayor a Menor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <div id="reset-filters-wrapper"></div>
+                        <button type="submit" class="btn-apply">Aplicar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Grilla de Productos -->
+            <div class="products-grid" id="products-grid-static">
+                <!-- Se cargará dinámicamente desde productos.json vía JS -->
+                <div class="no-results glass">
+                    <p>Cargando catálogo de laboratorio de BioTinker...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Panel Lateral del Carrito (Sidebar) -->
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-sidebar-header">
+            <h3>Carrito Científico</h3>
+            <button class="close-btn" onclick="toggleCart()">&times;</button>
+        </div>
+        
+        <div id="cart-items-container" class="cart-items-container">
+            <div class="cart-empty-message">
+                <p>Tu carrito está vacío.</p>
+                <small>Agrega cepas o reactivos del catálogo.</small>
+            </div>
+        </div>
+        
+        <div class="cart-sidebar-footer">
+            <div class="cart-total-row">
+                <span>Total Estimado:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button id="checkout-btn" class="checkout-btn" onclick="checkout()" disabled>
+                Confirmar Compra Recombinante
+            </button>
+            <p class="cart-warning-note">
+                ⚠️ *Nota: Los datos de stock y del carrito se mantienen únicamente en la memoria caché del navegador y se perderán si cierras el navegador.*
+            </p>
+        </div>
+    </div>
+    
+    <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+    <div id="toast-notification" class="toast-notification"></div>
+
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 BioTinker - Algoritmos y Estructura de Datos (Actividad Formativa)</p>
+            <p class="footer-subtext">Hospedaje Estático Cliente-Servidor en GitHub Pages sin base de datos.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="static/js/cart.js"></script>
+    <script src="static/js/static_app.js"></script>
+</body>
+</html>

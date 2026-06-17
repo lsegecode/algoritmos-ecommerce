@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from flask import Flask, render_template, request, jsonify, abort
 
 app = Flask(__name__)
@@ -7,6 +8,187 @@ app.secret_key = 'biotinker_secret_key_for_session_security'
 
 # Ruta al archivo de base de datos simulada
 DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'productos.json')
+
+# --- PARSER DE MARKDOWN Y LÓGICA DE PROMPTS PARA SLIDESHOW ---
+
+def markdown_a_html(md_text):
+    """
+    Convierte un subconjunto básico de Markdown a HTML utilizando expresiones regulares y lógica por líneas.
+    Ideal para un enfoque de algoritmos y estructuras de datos sin librerías externas.
+    Soporta formato básico, listas, código y tablas de Markdown.
+    """
+    if not md_text:
+        return ""
+        
+    html = md_text
+    
+    # Reemplazar bloques de código ``` ... ``` con <pre><code>...</code></pre>
+    html = re.sub(r'```(?:python|javascript|json|html|css|mermaid)?\s*(.*?)\s*```', r'<pre><code>\1</code></pre>', html, flags=re.DOTALL)
+    
+    # Reemplazar código en línea `code`
+    html = re.sub(r'`([^`\n]+)`', r'<code>\1</code>', html)
+    
+    # Reemplazar negrita **text**
+    html = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', html)
+    
+    # Reemplazar cursiva *text*
+    html = re.sub(r'\*([^*]+)\*', r'<em>\1</em>', html)
+    
+    # Reemplazar encabezados: ###, ##, #
+    html = re.sub(r'^### (.*?)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
+    html = re.sub(r'^## (.*?)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
+    html = re.sub(r'^# (.*?)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
+    
+    # Reemplazar citas comunes > texto
+    html = re.sub(r'^>\s*(.*?)$', r'<blockquote>\1</blockquote>', html, flags=re.MULTILINE)
+    
+    # Convertir listas con guión o asterisco a <li>
+    html = re.sub(r'^\s*[\-\*]\s*(.*?)$', r'<li>\1</li>', html, flags=re.MULTILINE)
+    
+    # Procesar líneas y tablas de forma algorítmica
+    lineas = html.split('\n')
+    lineas_procesadas = []
+    dentro_de_codigo = False
+    en_tabla = False
+    cabecera_tabla = True
+    
+    for linea in lineas:
+        linea_stripped = linea.strip()
+        
+        # Manejo de bloques de código preformateados
+        if '<pre>' in linea:
+            dentro_de_codigo = True
+        if '</pre>' in linea:
+            dentro_de_codigo = False
+            lineas_procesadas.append(linea)
+            continue
+            
+        if dentro_de_codigo:
+            lineas_procesadas.append(linea)
+            continue
+            
+        # --- PARSER DE TABLAS MARKDOWN ---
+        if linea_stripped.startswith('|') and linea_stripped.endswith('|'):
+            # Si es la línea de separación/alineación (ej: | :--- | :--- |), la ignoramos
+            if re.match(r'^\|[\s\-\:\s|]+$', linea_stripped):
+                continue
+                
+            # Extraemos las celdas (ignorando la primera y última celda vacía por los '|' extremos)
+            celdas = [celda.strip() for celda in linea_stripped.split('|')[1:-1]]
+            
+            if not en_tabla:
+                # Iniciar una nueva tabla
+                en_tabla = True
+                cabecera_tabla = True
+                lineas_procesadas.append('<table><thead>')
+                
+            if cabecera_tabla:
+                # Fila de cabecera
+                th_elements = ''.join([f'<th>{celda}</th>' for celda in celdas])
+                lineas_procesadas.append(f'<tr>{th_elements}</tr>')
+                lineas_procesadas.append('</thead><tbody>')
+                cabecera_tabla = False
+            else:
+                # Fila de datos
+                td_elements = ''.join([f'<td>{celda}</td>' for celda in celdas])
+                lineas_procesadas.append(f'<tr>{td_elements}</tr>')
+            
+            continue
+        else:
+            # Si estábamos en una tabla y la línea actual ya no es parte de la tabla, la cerramos
+            if en_tabla:
+                en_tabla = False
+                lineas_procesadas.append('</tbody></table>')
+                
+        # --- PROCESAMIENTO DE LÍNEAS REGULARES ---
+        if not linea_stripped:
+            lineas_procesadas.append('<div class="spacer"></div>')
+        elif (linea_stripped.startswith('<h') or 
+              linea_stripped.startswith('<li') or 
+              linea_stripped.startswith('<blockquote') or 
+              linea_stripped.startswith('<div') or
+              linea_stripped.startswith('<pre') or
+              linea_stripped.startswith('</pre')):
+            lineas_procesadas.append(linea)
+        else:
+            lineas_procesadas.append(f'<p>{linea}</p>')
+            
+    # Si al terminar el archivo seguimos en una tabla, la cerramos
+    if en_tabla:
+        lineas_procesadas.append('</tbody></table>')
+        
+    html = '\n'.join(lineas_procesadas)
+    return html
+
+def obtener_seccion_prompts(contenido, cabecera_inicio, cabecera_fin=None):
+    """
+    Busca de forma algorítmica una subsección de texto delimitada por cabeceras.
+    """
+    idx_inicio = contenido.find(cabecera_inicio)
+    if idx_inicio == -1:
+        return ""
+    
+    # Avanzamos hasta después de la cabecera e inclusive la nueva línea
+    idx_inicio_contenido = contenido.find('\n', idx_inicio)
+    if idx_inicio_contenido == -1:
+        idx_inicio_contenido = idx_inicio + len(cabecera_inicio)
+    else:
+        idx_inicio_contenido += 1
+        
+    if cabecera_fin:
+        idx_fin = contenido.find(cabecera_fin, idx_inicio_contenido)
+        if idx_fin != -1:
+            return contenido[idx_inicio_contenido:idx_fin].strip()
+    return contenido[idx_inicio_contenido:].strip()
+
+def cargar_secciones_prompts():
+    """
+    Lee Prompts.md y lo separa en los tres bloques correspondientes
+    a las fases de interacción con la IA.
+    """
+    prompts_path = os.path.join(os.path.dirname(__file__), 'Prompts.md')
+    try:
+        with open(prompts_path, 'r', encoding='utf-8') as f:
+            contenido = f.read()
+    except FileNotFoundError:
+        return []
+        
+    # Extraer las secciones por cabeceras
+    seccion_pre = obtener_seccion_prompts(contenido, "# Pre creacion", "# Numero 1")
+    seccion_num1 = obtener_seccion_prompts(contenido, "# Numero 1", "# Numero 2")
+    seccion_num2 = obtener_seccion_prompts(contenido, "# Numero 2")
+    
+    # Procesar markdown a HTML
+    slides = [
+        {
+            'titulo': 'Fase Inicial (Pre-creación)',
+            'subtitulo': 'Definición de requerimientos básicos de BioTinker',
+            'html': markdown_a_html(seccion_pre)
+        },
+        {
+            'titulo': 'Fase 1 (Prompt 1)',
+            'subtitulo': 'Diseño del registro Producto y formato JSON inicial',
+            'html': markdown_a_html(seccion_num1)
+        },
+        {
+            'titulo': 'Fase 2 (Prompt 2)',
+            'subtitulo': 'Construcción del Slideshow de Prompts y desplegables',
+            'html': markdown_a_html(seccion_num2)
+        }
+    ]
+    return slides
+
+def cargar_archivo_markdown(nombre_archivo):
+    """
+    Carga un archivo markdown y lo parsea a HTML.
+    """
+    filepath = os.path.join(os.path.dirname(__file__), nombre_archivo)
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+            return markdown_a_html(content)
+    except FileNotFoundError:
+        return f"<p>Error: El archivo {nombre_archivo} no se encuentra en el proyecto.</p>"
 
 # Carga inicial de datos en memoria (Base de datos en caché del servidor)
 def cargar_productos_desde_archivo():
@@ -178,6 +360,25 @@ def api_comprar():
         'message': '¡Compra procesada con éxito! Su pedido científico está en camino.',
         'actualizaciones': detalles_descuento
     })
+
+@app.route('/prompts')
+def mostrar_prompts():
+    """
+    Ruta que muestra el slideshow de prompts dinámicamente parseados desde Prompts.md
+    y paneles desplegables de propuesta.md, plan_implementacion.md y plan_implementacion_despliegue.md.
+    """
+    slides = cargar_secciones_prompts()
+    propuesta_html = cargar_archivo_markdown('propuesta.md')
+    plan_html = cargar_archivo_markdown('plan_implementacion.md')
+    plan_despliegue_html = cargar_archivo_markdown('plan_implementacion_despliegue.md')
+    
+    return render_template(
+        'prompts.html',
+        slides=slides,
+        propuesta_html=propuesta_html,
+        plan_html=plan_html,
+        plan_despliegue_html=plan_despliegue_html
+    )
 
 if __name__ == '__main__':
     # Ejecuta el servidor de desarrollo local de Flask
