@@ -33,11 +33,11 @@ El proyecto está estructurado bajo un modelo de **Soporte Híbrido**:
 
 ```mermaid
 graph TD
-    subgraph Modo Servidor (Local)
+    subgraph "Modo Servidor (Local)"
         AppPy[app.py / Flask] --> Jinja[Plantillas Jinja2 /templates]
         AppPy --> JsonData[productos.json]
     end
-    subgraph Modo Estático (GitHub Pages)
+    subgraph "Modo Estático (GitHub Pages)"
         RootHtml[Archivos HTML raíz /] --> StaticJS[static_app.js / API Client]
         StaticJS --> JsonData
     end
